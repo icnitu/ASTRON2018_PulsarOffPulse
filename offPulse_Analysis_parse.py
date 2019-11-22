@@ -123,8 +123,6 @@ def setOffValue(offpulse_array):
 
 current_dir = os.path.dirname(os.path.realpath(__file__)) # can just use ./
 
-# TODO: plot the limits of on\off pulse on pulse profile
-
 
 
 # TODO: change prog to the final name of file
@@ -156,10 +154,14 @@ parser.add_argument('-b', '--nband', nargs=1, type=posint, metavar = 'X', defaul
 			help='Number of bands in the bandpass. Default is 1.')
 
 parser.add_argument('-cgf', '--centralGfreq', action='store_const', const='y', default='n',
-			help='Only attempt a Gaussian fit to the central part of the frequency AutoCorrelation function. Necessary sometimes because of high noise.')
+			help='Only attempt a Gaussian fit to the central half part of the frequency AutoCorrelation function. Necessary sometimes because of high noise/narrow peak.')
+parser.add_argument('-vcgf', '--vcentralGfreq', action='store_const', const='y', default='n',
+			help='Only attempt a Gaussian fit to the central quarter part of the frequency AutoCorrelation function. Necessary sometimes because of high noise/narrow peak.')
 
 parser.add_argument('-cgt', '--centralGtime', action='store_const', const='y', default='n',
-			help='Only attempt a Gaussian fit to the central part of the time AutoCorrelation function. Necessary sometimes because of high noise.')
+			help='Only attempt a Gaussian fit to the central half part of the time AutoCorrelation function. Necessary sometimes because of high noise/narrow peak.')
+parser.add_argument('-vcgt', '--vcentralGtime', action='store_const', const='y', default='n',
+			help='Only attempt a Gaussian fit to the central quarter part of the time AutoCorrelation function. Necessary sometimes because of high noise/narrow peak.')
 
 parser.add_argument('-f', '--finish', action='store_const', const=True, default = False,
 			help='Finish the analysis at scintillation bandwidth and timescale.' )
@@ -200,6 +202,10 @@ doOffPulse, offBin_fmin, offBin_fmax = setOffValue(parser_args.offpulse)
 # Only central Gaussian fit
 centralGf = setValue(parser_args.centralGfreq)
 centralGt = setValue(parser_args.centralGtime)
+
+# Only 'very' central Gaussian fit
+vcentralGf = setValue(parser_args.vcentralGfreq)
+vcentralGt = setValue(parser_args.vcentralGtime)
 
 # Finish?
 finishEarly = setValue(parser_args.finish)
@@ -253,7 +259,7 @@ for ifile in range(len(archive_files)):
 	print ifile, '. ',data_files_actual[ifile]
 
 	if doOffPulse:
-		archive_analysis.archive_analysis(archive_files[ifile], output_folder, fphaseOffset = phaseOffset, ffreq_fract=freq_fract, fNbands_number = Nbands_number,fdoOnPulse = doOnPulse, fdoOffPulse = doOffPulse, fonBin_f=np.array([onBin_fmin,onBin_fmax]), foffBin_f=np.array([offBin_fmin,offBin_fmax]),small_fit = centralGf, small_fit_t = centralGt,ffinishEarly=finishEarly)
+		archive_analysis.archive_analysis(archive_files[ifile], output_folder, fphaseOffset = phaseOffset, ffreq_fract=freq_fract, fNbands_number = Nbands_number,fdoOnPulse = doOnPulse, fdoOffPulse = doOffPulse, fonBin_f=np.array([onBin_fmin,onBin_fmax]), foffBin_f=np.array([offBin_fmin,offBin_fmax]),small_fit = centralGf, vsmall_fit = vcentralGf, small_fit_t = centralGt, vsmall_fit_t = vcentralGt, ffinishEarly=finishEarly)
 	else:
 		archive_analysis.archive_analysis(archive_files[ifile], output_folder, fphaseOffset = phaseOffset, ffreq_fract=freq_fract, fNbands_number = Nbands_number,fdoOnPulse = doOnPulse, fdoOffPulse = doOffPulse, fonBin_f=np.array([onBin_fmin,onBin_fmax]),ffinishEarly=finishEarly)
 

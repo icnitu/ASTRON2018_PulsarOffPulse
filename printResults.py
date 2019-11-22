@@ -2,17 +2,17 @@ from CorrelationsFULL import *
 
 
 
-def print_results(I_on,I_off, bandwidth, obstime, chanToMHz, binToTime, saved_folder, writeFile, is_avg = False, scintill_bw0=0,scintill_time0=0,fract=1/4., small0=False, small0t=False, size_t_avg = 1,size_f_avg=1):
+def print_results(I_on,I_off, bandwidth, obstime, chanToMHz, binToTime, saved_folder, writeFile, is_avg = False, scintill_bw0=0,scintill_time0=0,fract=1/4., small0=False, vsmall0=False, small0t=False, vsmall0t=False, size_t_avg = 1,size_f_avg=1):
 
 	if is_avg==False:
 		writeFile.write('\n------ Non-averaged ------\n\n' )
-		AC00_on, stdAC00_on, AC00_off, stdAC00_off, CC00, stdCC00, scintill_bw, scintill_bw2, scintill_time, kappa, kappa_off, Neff, eta, sigma_eta, syst_eta, etaMax, sigma_etaMax, syst_etaMax = CorrelationsFULL(I_on, I_off, bandwidth, obstime, saved_folder, small=small0, smallt=small0t)
+		AC00_on, stdAC00_on, AC00_off, stdAC00_off, CC00, stdCC00, scintill_bw, scintill_bw2, scintill_time, kappa, kappa_off, Neff, eta, sigma_eta, syst_eta, etaMax, sigma_etaMax, syst_etaMax = CorrelationsFULL(I_on, I_off, bandwidth, obstime, saved_folder, small=small0, vsmall = vsmall0, smallt=small0t, vsmallt=vsmall0t)
 		
 	if is_avg:
 		writeFile.write('\n------ Averaged ------\n' )
 		strfract = '\n------ 1/'+str(int(1/fract))+' ------\n\n'
 		writeFile.write(strfract)
-		AC00_on, stdAC00_on, AC00_off, stdAC00_off, CC00, stdCC00, scintill_bw, scintill_bw2, scintill_time, kappa, kappa_off, Neff, eta, sigma_eta, syst_eta, etaMax, sigma_etaMax, syst_etaMax = CorrelationsFULL(I_on, I_off, bandwidth, obstime, saved_folder, isAVG=True, scintill_bwi=scintill_bw0, scintill_timei=scintill_time0, f=int(1/fract), small=small0, smallt=small0t,size_t = size_t_avg, size_f = size_f_avg)
+		AC00_on, stdAC00_on, AC00_off, stdAC00_off, CC00, stdCC00, scintill_bw, scintill_bw2, scintill_time, kappa, kappa_off, Neff, eta, sigma_eta, syst_eta, etaMax, sigma_etaMax, syst_etaMax = CorrelationsFULL(I_on, I_off, bandwidth, obstime, saved_folder, isAVG=True, scintill_bwi=scintill_bw0, scintill_timei=scintill_time0, f=int(1/fract), small=small0, vsmall=vsmall0, smallt=small0t, vsmallt=vsmall0t, size_t = size_t_avg, size_f = size_f_avg)
 	
 	
 	
@@ -68,17 +68,17 @@ def print_results(I_on,I_off, bandwidth, obstime, chanToMHz, binToTime, saved_fo
 
 
 
-def print_results_small(I_on, bandwidth, obstime, chanToMHz, binToTime, saved_folder, writeFile, is_avg = False, scintill_bw0=0,scintill_time0=0,fract=1/4., small0=False, small0t=False, size_t_avg = 1,size_f_avg=1):
+def print_results_small(I_on, bandwidth, obstime, chanToMHz, binToTime, saved_folder, writeFile, is_avg = False, scintill_bw0=0,scintill_time0=0,fract=1/4., small0=False, vsmall0=False, small0t=False, vsmall0t=False,size_t_avg = 1,size_f_avg=1):
 
 	if is_avg==False:
 		writeFile.write('\n------ Non-averaged ------\n\n' )
-		scintill_bw, scintill_bw2, scintill_time, kappa, Neff = CorrelationsFULL_small(I_on, bandwidth, obstime, saved_folder, small=small0, smallt=small0t)
+		scintill_bw, scintill_bw2, scintill_time, kappa, Neff = CorrelationsFULL_small(I_on, bandwidth, obstime, saved_folder, small=small0, vsmall=vsmall0, smallt=small0t,vsmallt=vsmall0t)
 		
 	if is_avg:
 		writeFile.write('\n------ Averaged ------\n' )
 		strfract = '\n------ 1/'+str(int(1/fract))+' ------\n\n'
 		writeFile.write(strfract)
-		scintill_bw, scintill_bw2, scintill_time, kappa, Neff = CorrelationsFULL_small(I_on, bandwidth, obstime, saved_folder, isAVG=True, scintill_bwi=scintill_bw0, scintill_timei=scintill_time0, f=int(1/fract), small=small0, smallt=small0t,size_t = size_t_avg, size_f = size_f_avg)
+		scintill_bw, scintill_bw2, scintill_time, kappa, Neff = CorrelationsFULL_small(I_on, bandwidth, obstime, saved_folder, isAVG=True, scintill_bwi=scintill_bw0, scintill_timei=scintill_time0, f=int(1/fract), small=small0, vsmall=vsmall0, smallt=small0t,vsmallt=vsmall0t,size_t = size_t_avg, size_f = size_f_avg)
 	
 	
 	

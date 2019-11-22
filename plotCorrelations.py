@@ -2,7 +2,7 @@ import matplotlib.pyplot as plt
 
 from GaussFit_ACon import *
 
-def plot_CC(CCft, CCt, CCf, binToTime, chanToMHz, plot_name, saved_folder, DOfitGauss = False, GaussFitParams_t = [], twoGaussFitParams_f = [], smallFit=False,   smallFitt=False):
+def plot_CC(CCft, CCt, CCf, binToTime, chanToMHz, plot_name, saved_folder, DOfitGauss = False, GaussFitParams_t = [], twoGaussFitParams_f = [], smallFit=False, vsmallFit=False, smallFitt=False, vsmallFitt=False):
 
 	Nsubint = (CCft.shape[0]+1)/2
 	Nchan = (CCft.shape[1]+1)/2
@@ -54,8 +54,14 @@ def plot_CC(CCft, CCt, CCf, binToTime, chanToMHz, plot_name, saved_folder, DOfit
 	timeLags = timeLags*binToTime
 	plt.plot(timeLags,CCt,'-k')
 	if DOfitGauss:
-	
-		if smallFitt:
+		if vsmallFitt:
+			Nsmallt = (Nsubint+2)/2
+			GaussFit_t = Gauss(np.arange(Nsmallt+1),*GaussFitParams_t)
+			timeLags_small=timeLags[(Nsubint/2-1):(3*Nsubint/2)]
+			timeLags_vsmall=timeLags_small[(Nsmallt/2-1):(3*Nsmallt/2)]
+			plt.plot(timeLags_vsmall, GaussFit_t,'-r')
+
+		elif smallFitt:
 			GaussFit_t = Gauss(np.arange(Nsubint+1),*GaussFitParams_t)
 			timeLags_small=timeLags[(Nsubint/2-1):(3*Nsubint/2)]
 			plt.plot(timeLags_small, GaussFit_t,'-r')
@@ -84,15 +90,33 @@ def plot_CC(CCft, CCt, CCf, binToTime, chanToMHz, plot_name, saved_folder, DOfit
 	if DOfitGauss:
 		
 		try:
-			if smallFit:
+
+			if vsmallFit:
+				Nsmall=(Nchan+2)/2
+				twoGaussFit_f = twoGauss(np.arange(Nsmall+1),*twoGaussFitParams_f)				
+			elif smallFit:
 				twoGaussFit_f = twoGauss(np.arange(Nchan+1),*twoGaussFitParams_f)
 			elif smallFit==False:
 				twoGaussFit_f = twoGauss(np.arange(2*Nchan-1),*twoGaussFitParams_f)
-			# twoGaussFit_f = [a1,a2,x0,sigma1,sigma2,yoffset]
-			firstGaussFitParams_f = [twoGaussFitParams_f[0],twoGaussFitParams_f[2],twoGaussFitParams_f[3],twoGaussFitParams_f[5]]
-			secondGaussFitParams_f = [twoGaussFitParams_f[1],twoGaussFitParams_f[2],twoGaussFitParams_f[4],twoGaussFitParams_f[5]]
+			# #twoGaussFit_f = [a1,a2,x0,sigma1,sigma2,yoffset]
+			# twoGaussFit_f = [a1,a2,x0,sigma1,sigma2]
+			#firstGaussFitParams_f = [twoGaussFitParams_f[0],twoGaussFitParams_f[2],twoGaussFitParams_f[3],twoGaussFitParams_f[5]]
+			#secondGaussFitParams_f = [twoGaussFitParams_f[1],twoGaussFitParams_f[2],twoGaussFitParams_f[4],twoGaussFitParams_f[5]]
+
+			firstGaussFitParams_f = [twoGaussFitParams_f[0],twoGaussFitParams_f[2],twoGaussFitParams_f[3]]
+			secondGaussFitParams_f = [twoGaussFitParams_f[1],twoGaussFitParams_f[2],twoGaussFitParams_f[4]]
 			
-			if smallFit:
+			if vsmallFit:
+				firstGaussFit_f = Gauss(np.arange(Nsmall+1),*firstGaussFitParams_f)
+				secondGaussFit_f = Gauss(np.arange(Nsmall+1),*secondGaussFitParams_f)
+				freqLags_small = freqLags[(Nchan/2-1):(3*Nchan/2)]
+				freqLags_vsmall = freqLags_small[(Nsmall/2-1):(3*Nsmall/2)]
+				
+				plt.plot(firstGaussFit_f,freqLags_vsmall,'-c')
+				plt.plot(secondGaussFit_f,freqLags_vsmall,'-g')
+				plt.plot(twoGaussFit_f,freqLags_vsmall,'-r')
+				
+			elif smallFit:
 				firstGaussFit_f = Gauss(np.arange(Nchan+1),*firstGaussFitParams_f)
 				secondGaussFit_f = Gauss(np.arange(Nchan+1),*secondGaussFitParams_f)
 				freqLags_small = freqLags[(Nchan/2-1):(3*Nchan/2)]
@@ -109,7 +133,14 @@ def plot_CC(CCft, CCt, CCf, binToTime, chanToMHz, plot_name, saved_folder, DOfit
 		
 
 		except TypeError:
-			if smallFit:
+			if vsmallFit:
+				Nsmall=(Nchan+2)/2
+				GaussFit_f = Gauss(np.arange(Nsmall+1),*twoGaussFitParams_f)
+				freqLags_small=freqLags[(Nchan/2-1):(3*Nchan/2)]
+				freqLags_vsmall=freqLags_small[(Nsmall/2-1):(3*Nsmall/2)]
+				plt.plot(GaussFit_f,freqLags_vsmall,'-r')
+
+			elif smallFit:
 				GaussFit_f = Gauss(np.arange(Nchan+1),*twoGaussFitParams_f)
 				freqLags_small=freqLags[(Nchan/2-1):(3*Nchan/2)]
 				plt.plot(GaussFit_f,freqLags_small,'-r')
@@ -138,9 +169,9 @@ def plot_CC(CCft, CCt, CCf, binToTime, chanToMHz, plot_name, saved_folder, DOfit
 	
 	
 
-def plot_AC_withGauss(ACft, ACt, ACf, binToTime, chanToMHz, plot_name, saved_folder,gaussFitParams_t, twogaussFitParams_f,smallFit0=False, smallFit0t=False):
+def plot_AC_withGauss(ACft, ACt, ACf, binToTime, chanToMHz, plot_name, saved_folder, gaussFitParams_t, twogaussFitParams_f,smallFit0=False, vsmallFit0=False, smallFit0t=False, vsmallFit0t=False):
 
-	plot_CC(ACft, ACt, ACf, binToTime, chanToMHz, plot_name, saved_folder, DOfitGauss = True, GaussFitParams_t = gaussFitParams_t, twoGaussFitParams_f = twogaussFitParams_f,smallFit=smallFit0, smallFitt=smallFit0t)
+	plot_CC(ACft, ACt, ACf, binToTime, chanToMHz, plot_name, saved_folder, DOfitGauss = True, GaussFitParams_t = gaussFitParams_t, twoGaussFitParams_f = twogaussFitParams_f,smallFit=smallFit0, vsmallFit=vsmallFit0, smallFitt=smallFit0t, vsmallFitt=vsmallFit0t)
 	
 
 	

@@ -7,7 +7,7 @@ from Eta import *
 from plotCorrelations import *
 
 
-def CorrelationsFULL(I_on, I_off, bandwidth, obstime, saved_folder, isAVG=False, scintill_bwi=0, scintill_timei=0,f=4, small = False, smallt=False, size_t = 1,size_f = 1):
+def CorrelationsFULL(I_on, I_off, bandwidth, obstime, saved_folder, isAVG=False, scintill_bwi=0, scintill_timei=0,f=4, small = False, vsmall = False, smallt=False, vsmallt = False, size_t = 1,size_f = 1):
 	
 	Nchan = I_on.shape[1]
 	Nsubint = I_on.shape[0]
@@ -95,8 +95,14 @@ def CorrelationsFULL(I_on, I_off, bandwidth, obstime, saved_folder, isAVG=False,
 	print '\n -----> Fitting Gaussians to on-pulse AutoCorrelation...\n'	
 	
 	# only fit one Gaussian to ACt
-	if smallt:
-		ACt_on_small = ACt_on[(Nsubint/2-1):(3*Nsubint/2)]
+	ACt_on_small = ACt_on[(Nsubint/2-1):(3*Nsubint/2)]
+
+	if vsmallt:
+		Nsmallt = (ACt_on_small.shape[0]+1)/2
+		ACt_on_vsmall = ACt_on_small[(Nsmallt/2-1):(3*Nsmallt/2)]		
+		GaussFitParams_t = fitGauss_ACon(ACt_on_vsmall)
+
+	elif smallt:
 		GaussFitParams_t = fitGauss_ACon(ACt_on_small)
 	elif smallt==False:	
 		GaussFitParams_t = fitGauss_ACon(ACt_on)
@@ -105,9 +111,15 @@ def CorrelationsFULL(I_on, I_off, bandwidth, obstime, saved_folder, isAVG=False,
 	sigma_t = GaussFitParams_t[2]
 	
 	try:
+	
 		# ! fit two Gaussians to frequency plot
-		if small:
-			ACf_on_small = ACf_on[(Nchan/2-1):(3*Nchan/2)]
+		ACf_on_small = ACf_on[(Nchan/2-1):(3*Nchan/2)]
+		if vsmall:
+			Nsmall = (ACf_on_small.shape[0]+1)/2
+			ACf_on_vsmall = ACf_on_small[(Nsmall/2-1):(3*Nsmall/2)]		
+			twoGaussFitParams_f = fit2Gauss_ACon(ACf_on_vsmall)
+
+		elif small:
 			twoGaussFitParams_f = fit2Gauss_ACon(ACf_on_small)
 			
 		elif small==False:
@@ -123,7 +135,9 @@ def CorrelationsFULL(I_on, I_off, bandwidth, obstime, saved_folder, isAVG=False,
 	
 	
 	except RuntimeError:
-		if small:
+		if vsmall:
+			twoGaussFitParams_f = fitGauss_ACon(ACf_on_vsmall)
+		elif small:
 			twoGaussFitParams_f = fitGauss_ACon(ACf_on_small)
 		elif small==False:	
 			twoGaussFitParams_f = fitGauss_ACon(ACf_on)
@@ -141,13 +155,13 @@ def CorrelationsFULL(I_on, I_off, bandwidth, obstime, saved_folder, isAVG=False,
 		file_ACon_name = saved_folder + 'data_ACon'	
 		np.save(file_ACon_name,ACft_on)
 
-		plot_AC_withGauss(ACft_on, ACt_on, ACf_on, binToTime, chanToMHz, 'AutoCorrelation_on.png', saved_folder,GaussFitParams_t, twoGaussFitParams_f, smallFit0=small, smallFit0t=smallt)
+		plot_AC_withGauss(ACft_on, ACt_on, ACf_on, binToTime, chanToMHz, 'AutoCorrelation_on.png', saved_folder,GaussFitParams_t, twoGaussFitParams_f, smallFit0=small, vsmallFit0=vsmall, smallFit0t=smallt, vsmallFit0t=vsmallt)
 	if isAVG:
 		# save ACft_on to file as numpy array
 		file_ACon_avg_name = saved_folder + 'data_ACon_avg' + str(f)	
 		np.save(file_ACon_avg_name,ACft_on)
 		plot_name = 'AutoCorrelation_on_avg' + str(f) + '.png'
-		plot_AC_withGauss(ACft_on, ACt_on, ACf_on, binToTime, chanToMHz, plot_name, saved_folder,GaussFitParams_t, twoGaussFitParams_f, smallFit0=small, smallFit0t=smallt)
+		plot_AC_withGauss(ACft_on, ACt_on, ACf_on, binToTime, chanToMHz, plot_name, saved_folder,GaussFitParams_t, twoGaussFitParams_f, smallFit0=small, vsmallFit0=vsmall, smallFit0t=smallt, vsmallFit0t=vsmallt)
 	
 	print '\n -----> Calculating scintillation scales...\n'	
 	
@@ -207,10 +221,16 @@ def CorrelationsFULL_small(I_on, bandwidth, obstime, saved_folder, isAVG=False, 
 	AC00_on,stdAC00_on = CrossCorr_00(ACt0_on,ACf0_on)
 		
 	print '\n -----> Fitting Gaussians to on-pulse AutoCorrelation...\n'	
-	
+
 	# only fit one Gaussian to ACt
-	if smallt:
-		ACt_on_small = ACt_on[(Nsubint/2-1):(3*Nsubint/2)]
+	ACt_on_small = ACt_on[(Nsubint/2-1):(3*Nsubint/2)]
+
+	if vsmallt:
+		Nsmallt = (ACt_on_small.shape[0]+1)/2
+		ACt_on_vsmall = ACt_on_small[(Nsmall/2-1):(3*Nsmall/2)]
+		GaussFitParams_t = fitGauss_ACon(ACt_on_vsmall)
+
+	elif smallt:
 		GaussFitParams_t = fitGauss_ACon(ACt_on_small)
 	elif smallt==False:	
 		GaussFitParams_t = fitGauss_ACon(ACt_on)
@@ -219,9 +239,15 @@ def CorrelationsFULL_small(I_on, bandwidth, obstime, saved_folder, isAVG=False, 
 	sigma_t = GaussFitParams_t[2]
 	
 	try:
+
 		# ! fit two Gaussians to frequency plot
-		if small:
-			ACf_on_small = ACf_on[(Nchan/2-1):(3*Nchan/2)]
+		ACf_on_small = ACf_on[(Nchan/2-1):(3*Nchan/2)]
+		if vsmall:
+			Nsmall = (ACf_on_small.shape[0]+1)/2
+			ACf_on_vsmall = ACf_on_small[(Nsmall/2-1):(3*Nsmall/2)]		
+			twoGaussFitParams_f = fit2Gauss_ACon(ACf_on_vsmall)
+
+		elif small:
 			twoGaussFitParams_f = fit2Gauss_ACon(ACf_on_small)
 			
 		elif small==False:
@@ -237,7 +263,9 @@ def CorrelationsFULL_small(I_on, bandwidth, obstime, saved_folder, isAVG=False, 
 	
 	
 	except RuntimeError:
-		if small:
+		if vsmall:
+			twoGaussFitParams_f = fitGauss_ACon(ACf_on_vsmall)
+		elif small:
 			twoGaussFitParams_f = fitGauss_ACon(ACf_on_small)
 		elif small==False:	
 			twoGaussFitParams_f = fitGauss_ACon(ACf_on)

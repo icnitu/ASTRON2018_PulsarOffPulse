@@ -12,10 +12,16 @@ def get_size_avg(scintill_size,fraction=1/4.):
 
 def average(data,size_t,size_f):
 
+# TODO: say max of size_i for which can avg...
+# ...is such that i/size_i >~5 ?
+
 	# size_t and size_f need to be odd
 	# make sure they're int
 	size_t = int(size_t)
 	size_f = int(size_f)
+
+	Nt = data.shape[0]
+	Nf = data.shape[1]
 	
 	# make sure they're odd
 	if size_t%2 == 0:
@@ -23,17 +29,27 @@ def average(data,size_t,size_f):
 	if size_f%2 == 0:
 		size_f = size_f+1
 	
-	
-
-	
-	half_t = (size_t-1)/2
-	half_f = (size_f-1)/2
-	
-	Nt = data.shape[0]
-	Nf = data.shape[1]
-	
 	Nmax_t = int(Nt/size_t)
 	Nmax_f = int(Nf/size_f)
+	
+	if Nmax_t < 5:
+		size_t = int(Nt/5.)
+		if size_t%2 == 0:
+			size_t = size_t-1
+		Nmax_t = 5
+		print " !!! WARNING: the time averaging length too large; used a fifth of the total time interval instead."
+		
+	if Nmax_f < 5:
+		size_f = int(Nf/5.)
+		if size_f%2 == 0:
+			size_f = size_f-1
+		Nmax_f = 5	
+		print " !!! WARNING: the frequency averaging length too large; used a fifth of the total frequency interval instead."
+
+
+	half_t = (size_t-1)/2
+	half_f = (size_f-1)/2	
+	
 	
 	data_avg = np.empty([(Nmax_t+1),(Nmax_f+1)])
 	tavg = 0

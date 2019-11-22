@@ -37,7 +37,7 @@ def check_output_folder(input_value):
 	return input_value
 
 
-def archive_analysis(archive_file, output_folder, fphaseOffset = -1, ffreq_fract=0.03, fNbands_number = 1,fdoOnPulse = False, fdoOffPulse = False, fonBin_f=np.empty(2),foffBin_f=np.empty(2),small_fit = "n", small_fit_t = "n", ffinishEarly = False):
+def archive_analysis(archive_file, output_folder, fphaseOffset = -1, ffreq_fract=0.03, fNbands_number = 1,fdoOnPulse = False, fdoOffPulse = False, fonBin_f=np.empty(2),foffBin_f=np.empty(2),small_fit = "n", vsmall_fit= "n", small_fit_t = "n", vsmall_fit_t = "n", ffinishEarly = False):
 	
 
 	output_folder = check_output_folder(output_folder)
@@ -90,7 +90,6 @@ def archive_analysis(archive_file, output_folder, fphaseOffset = -1, ffreq_fract
 	file_profile_name = output_folder + 'data_PulseProfile'
 	np.save(file_profile_name,data_profile)
 	plotPulseProfile.plot_PulseProfile(data_profile,output_folder,onBin_fmin = fonBin_f[0],onBin_fmax = fonBin_f[1], offBin_fmin = foffBin_f[0], offBin_fmax = foffBin_f[1])
-
 
 
 
@@ -202,6 +201,13 @@ def archive_analysis(archive_file, output_folder, fphaseOffset = -1, ffreq_fract
 
 			small_fit_avg = small_fit
 
+			if str(vsmall_fit)=="y":
+				vsmall_fit = True
+			elif str(vsmall_fit)=="n":
+				vsmall_fit = False
+
+			vsmall_fit_avg = vsmall_fit
+
 #			small_message_t = "\nWhat about for the ACon(t)? Answer with 'y' or 'n'.\n"
 
 #			small_fit_t = read_good_input(small_message_t,["y","n"])
@@ -214,6 +220,12 @@ def archive_analysis(archive_file, output_folder, fphaseOffset = -1, ffreq_fract
 
 			small_fit_t_avg = small_fit_t
 
+			if str(vsmall_fit_t)=="y":
+				vsmall_fit_t = True
+			elif str(vsmall_fit_t)=="n":
+				vsmall_fit_t = False
+
+			vsmall_fit_t_avg = small_fit_t
 			
 
 			# non-averaged:
@@ -242,12 +254,13 @@ def archive_analysis(archive_file, output_folder, fphaseOffset = -1, ffreq_fract
 			I_off = data_off_corr.copy()
 			
 			if ffinishEarly:
-				results_values_small = printResults.print_results_small(I_on, bandwidth, obstime, chanToMHz,binToTime,output_folder,writeFile,small0=small_fit,small0t=small_fit_t)
+				results_values_small = printResults.print_results_small(I_on, bandwidth, obstime, chanToMHz,binToTime,output_folder,writeFile,small0=small_fit, vsmall0=vsmall_fit,small0t=small_fit_t,vsmall0t=vsmall_fit_t)
 				scintill_time = results_values_small[2]
 				scintill_bw = results_values_small[0]
 				Neff=results_values_small[4]
 			else:
-				results_values = printResults.print_results(I_on,I_off, bandwidth, obstime, chanToMHz,binToTime,output_folder,writeFile,small0=small_fit,small0t=small_fit_t)
+				results_values = printResults.print_results(I_on,I_off, bandwidth, obstime, chanToMHz,binToTime,output_folder,writeFile,small0=small_fit,vsmall0=vsmall_fit,
+small0t=small_fit_t,vsmall0t=vsmall_fit_t)
 	
 	
 				scintill_time = results_values[8]
@@ -293,9 +306,9 @@ def archive_analysis(archive_file, output_folder, fphaseOffset = -1, ffreq_fract
 			I_off_avg = data_off_corr_avg.copy()
 	
 			if ffinishEarly:
-				results_values_avg_small = printResults.print_results_small(I_on_avg, bandwidth, obstime, chanToMHz_avg4, binToTime_avg4, output_folder, writeFile, is_avg=True, scintill_bw0=scintill_bw_forAvg4, scintill_time0=scintill_time_forAvg4, small0=small_fit_avg, small0t=small_fit_t_avg, size_t_avg = size_t, size_f_avg=size_f)
+				results_values_avg_small = printResults.print_results_small(I_on_avg, bandwidth, obstime, chanToMHz_avg4, binToTime_avg4, output_folder, writeFile, is_avg=True, scintill_bw0=scintill_bw_forAvg4, scintill_time0=scintill_time_forAvg4, small0=small_fit_avg, vsmall0=vsmall_fit_avg, small0t=small_fit_t_avg, vsmall0t=vsmall_fit_t_avg, size_t_avg = size_t, size_f_avg=size_f)
 			else:
-				results_values_avg_small = printResults.print_results(I_on_avg,I_off_avg, bandwidth, obstime, chanToMHz_avg4, binToTime_avg4, output_folder, writeFile, is_avg=True, scintill_bw0=scintill_bw_forAvg4, scintill_time0=scintill_time_forAvg4, small0=small_fit_avg, small0t=small_fit_t_avg, size_t_avg = size_t, size_f_avg=size_f)
+				results_values_avg_small = printResults.print_results(I_on_avg,I_off_avg, bandwidth, obstime, chanToMHz_avg4, binToTime_avg4, output_folder, writeFile, is_avg=True, scintill_bw0=scintill_bw_forAvg4, scintill_time0=scintill_time_forAvg4, small0=small_fit_avg, vsmall0=vsmall_fit_avg, small0t=small_fit_t_avg, vsmall0t=vsmall_fit_t_avg, size_t_avg = size_t, size_f_avg=size_f)
 	
 
 			# ------ Averaged by 1/2:
@@ -335,9 +348,9 @@ def archive_analysis(archive_file, output_folder, fphaseOffset = -1, ffreq_fract
 			I_off_avg2 = data_off_corr_avg2.copy()
 
 			if ffinishEarly:
-				results_values_avg2_small = printResults.print_results_small(I_on_avg2, bandwidth, obstime, chanToMHz_avg4, binToTime_avg4, output_folder, writeFile, is_avg=True, scintill_bw0=scintill_bw_forAvg4, scintill_time0=scintill_time_forAvg4, small0=small_fit_avg, small0t=small_fit_t_avg, size_t_avg = size_t, size_f_avg=size_f)
+				results_values_avg2_small = printResults.print_results_small(I_on_avg2, bandwidth, obstime, chanToMHz_avg4, binToTime_avg4, output_folder, writeFile, is_avg=True, scintill_bw0=scintill_bw_forAvg4, scintill_time0=scintill_time_forAvg4, small0=small_fit_avg, vsmall0=vsmall_fit_avg, small0t=small_fit_t_avg, vsmall0t=vsmall_fit_t_avg, size_t_avg = size_t, size_f_avg=size_f)
 			else:
-				results_values_avg2_small = printResults.print_results(I_on_avg2, I_off_avg2, bandwidth, obstime, chanToMHz_avg2, binToTime_avg2, output_folder, writeFile, is_avg=True, scintill_bw0=scintill_bw_forAvg2, scintill_time0=scintill_time_forAvg2, fract=1/2., small0=small_fit_avg, small0t=small_fit_t_avg, size_t_avg = size_t2, size_f_avg=size_f2)
+				results_values_avg2_small = printResults.print_results(I_on_avg2, I_off_avg2, bandwidth, obstime, chanToMHz_avg2, binToTime_avg2, output_folder, writeFile, is_avg=True, scintill_bw0=scintill_bw_forAvg2, scintill_time0=scintill_time_forAvg2, fract=1/2., small0=small_fit_avg, vsmall0=vsmall_fit_avg, small0t=small_fit_t_avg, vsmall0t=vsmall_fit_t_avg, size_t_avg = size_t2, size_f_avg=size_f2)
 	
 
 	 		writeFile.close()

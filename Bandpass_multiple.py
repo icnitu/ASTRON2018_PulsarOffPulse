@@ -19,7 +19,7 @@ def get_each_fit_bandpass(data_off_bandpass,xchans,poly_order_i=8,Nrepeat_i = 10
 
 		for irepeat in range(Nrepeat_i):
 			Naway = max(float(Naway0_i)/(1.5**irepeat),3.)
-			print "\n !!!!!1.0 DEBUG!!!!!\n"
+			#print "\n !!!!!1.0 DEBUG!!!!!\n"
 			poly_coeff = np.polyfit(xi,yi,poly_order_i)
 			residuals = yi-np.polyval(poly_coeff,xi)
 			residuals_mean = residuals.mean()
@@ -32,7 +32,7 @@ def get_each_fit_bandpass(data_off_bandpass,xchans,poly_order_i=8,Nrepeat_i = 10
 			yClean = yi[(residuals>=awayMin) & (residuals<=awayMax)]
 			xi = xClean
 			yi = yClean
-		print "\n !!!!!2.0 DEBUG!!!!!\n"
+		#print "\n !!!!!2.0 DEBUG!!!!!\n"
 			
 		# now fit final x,y
 		poly_coeff_fit = np.polyfit(xi,yi,poly_order_i)	
